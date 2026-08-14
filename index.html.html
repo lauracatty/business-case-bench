@@ -1,0 +1,1631 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Business Case Bench</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, transparent 31px, var(--cp-border) 32px),
+        linear-gradient(transparent 31px, var(--cp-border) 32px),
+        var(--cp-bg);
+      background-size: 32px 32px;
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.45;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]:not([tabindex="-1"]) {
+      outline-offset: 3px;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--cp-link);
+    }
+
+    .app {
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    header.hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero-copy,
+    .hero-card,
+    .card,
+    .stage-panel {
+      background: var(--cp-panel-strong);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-border);
+    }
+
+    .hero-copy {
+      padding: 26px;
+    }
+
+    .eyebrow,
+    .label,
+    .data-label,
+    .pill,
+    .mini,
+    .axis,
+    .markdown-status {
+      font-family: Consolas, "Courier New", Courier, monospace;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      color: var(--cp-link);
+      font-size: 0.78rem;
+      margin: 0 0 8px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      margin: 0;
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+    }
+
+    h1 {
+      font-size: clamp(2.35rem, 8vw, 5.8rem);
+      max-width: 850px;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .lede {
+      color: var(--cp-text-muted);
+      max-width: 780px;
+      margin-top: 14px;
+      font-size: 1.05rem;
+    }
+
+    .hero-card {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .metric-large {
+      font-family: Consolas, "Courier New", Courier, monospace;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1;
+      color: var(--cp-success);
+      letter-spacing: -0.08em;
+    }
+
+    .risk-line {
+      border-left: 4px solid var(--cp-danger);
+      padding-left: 12px;
+      color: var(--cp-text-muted);
+    }
+
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
+      margin-bottom: 18px;
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: var(--cp-overlay);
+      backdrop-filter: blur(8px);
+    }
+
+    .tab {
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface);
+      color: var(--cp-text-muted);
+      border-radius: 0.625rem;
+      padding: 12px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .tab[aria-selected="true"] {
+      background: var(--cp-text);
+      color: var(--cp-bg);
+      border-color: var(--cp-text);
+    }
+
+    .tab span:first-child {
+      font-family: Consolas, "Courier New", Courier, monospace;
+      font-size: 0.72rem;
+    }
+
+    .tab span:last-child {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .stage {
+      display: none;
+    }
+
+    .stage.active {
+      display: block;
+    }
+
+    .stage-panel {
+      padding: 22px;
+    }
+
+    .stage-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .stage-head p {
+      color: var(--cp-text-muted);
+      max-width: 720px;
+      margin-top: 8px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      padding: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    label,
+    .label {
+      color: var(--cp-text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--cp-border-strong);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      padding: 10px 11px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 82px;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    .question-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .question {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 330px);
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--cp-border);
+      background: var(--cp-surface);
+      border-radius: 0.625rem;
+      padding: 12px;
+    }
+
+    .question strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .question small {
+      color: var(--cp-text-muted);
+    }
+
+    .radio-scale {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .radio-scale input {
+      inline-size: auto;
+      position: absolute;
+      opacity: 0;
+    }
+
+    .radio-scale label {
+      display: grid;
+      place-items: center;
+      min-height: 38px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface-soft);
+      color: var(--cp-text-muted);
+      cursor: pointer;
+      font-family: Consolas, "Courier New", Courier, monospace;
+      font-size: 0.72rem;
+    }
+
+    .radio-scale input:checked + label {
+      background: var(--cp-link);
+      border-color: var(--cp-link);
+      color: var(--cp-bg);
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px minmax(0, 1fr) 58px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar-track {
+      height: 14px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface-soft);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: var(--w);
+      background: var(--bar-color, var(--cp-link));
+      border-radius: 0.625rem;
+    }
+
+    .callout {
+      border: 1px solid var(--cp-border-strong);
+      border-left: 5px solid var(--cp-danger);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      padding: 14px;
+    }
+
+    .callout.good {
+      border-left-color: var(--cp-success);
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .model-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr repeat(3, minmax(92px, 120px));
+      gap: 8px;
+      align-items: end;
+    }
+
+    .range-row .label {
+      padding-bottom: 10px;
+    }
+
+    .readout {
+      background: var(--cp-text);
+      color: var(--cp-bg);
+      border-radius: 16px;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      box-shadow: var(--cp-shadow);
+    }
+
+    html[data-theme="dark"] .readout {
+      background: var(--cp-bg-elevated);
+      color: var(--cp-text);
+    }
+
+    .readout .label,
+    .readout .data-label,
+    .readout .mini {
+      color: var(--cp-text-soft);
+    }
+
+    .readout-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .readout-tile {
+      border: 1px solid var(--cp-border-strong);
+      border-radius: 0.625rem;
+      padding: 12px;
+      background: var(--cp-sheen);
+    }
+
+    .readout-number {
+      font-family: Consolas, "Courier New", Courier, monospace;
+      font-size: clamp(1.35rem, 3.2vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.08em;
+      color: var(--cp-success);
+    }
+
+    .payback {
+      display: grid;
+      gap: 8px;
+    }
+
+    .payback-track {
+      position: relative;
+      height: 38px;
+      border: 1px solid var(--cp-border-strong);
+      border-radius: 0.625rem;
+      background: var(--cp-surface-soft);
+      overflow: hidden;
+    }
+
+    .payback-band {
+      position: absolute;
+      inset-block: 10px;
+      left: var(--start);
+      width: var(--width);
+      border-radius: 0.625rem;
+      background: var(--cp-warning);
+    }
+
+    .payback-marker {
+      position: absolute;
+      inset-block: 4px;
+      left: var(--left);
+      width: 4px;
+      border-radius: 0.625rem;
+      background: var(--cp-danger);
+    }
+
+    .axis {
+      display: flex;
+      justify-content: space-between;
+      color: var(--cp-text-soft);
+      font-size: 0.72rem;
+    }
+
+    .sensitivity-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sensitivity-row {
+      display: grid;
+      grid-template-columns: 148px minmax(0, 1fr) 92px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .sensitivity-row .bar-fill {
+      background: var(--cp-link);
+    }
+
+    .sensitivity-row.fragile .bar-fill {
+      background: var(--cp-danger);
+    }
+
+    .fragile-text {
+      color: var(--cp-danger);
+      font-weight: 800;
+    }
+
+    .challenge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .challenge-card {
+      border: 1px solid var(--cp-border-strong);
+      border-radius: 0.625rem;
+      background: var(--cp-sheen);
+      padding: 12px;
+    }
+
+    .challenge-card strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.15rem;
+    }
+
+    details {
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 13px 14px;
+      font-weight: 800;
+    }
+
+    .details-body {
+      padding: 0 14px 14px;
+      color: var(--cp-text-muted);
+    }
+
+    .assumption-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .assumption {
+      border-top: 1px solid var(--cp-border);
+      padding-top: 8px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .button {
+      border: 1px solid var(--cp-link);
+      background: var(--cp-link);
+      color: var(--cp-bg);
+      border-radius: 0.625rem;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      background: var(--cp-surface);
+      color: var(--cp-link);
+    }
+
+    .one-pager {
+      display: grid;
+      gap: 14px;
+    }
+
+    .case-section {
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 14px;
+      background: var(--cp-surface);
+    }
+
+    .case-section h3 {
+      margin-bottom: 8px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      padding: 6px 8px;
+      color: var(--cp-text-muted);
+      background: var(--cp-surface-soft);
+      font-size: 0.72rem;
+    }
+
+    .mini {
+      color: var(--cp-text-muted);
+      font-size: 0.72rem;
+    }
+
+    .muted {
+      color: var(--cp-text-muted);
+    }
+
+    .mono {
+      font-family: Consolas, "Courier New", Courier, monospace;
+    }
+
+    .markdown-status {
+      color: var(--cp-success);
+      font-size: 0.74rem;
+      min-height: 1.2em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 900px) {
+      header.hero,
+      .model-layout,
+      .grid.two,
+      .grid.three,
+      .grid.four,
+      .summary-grid,
+      .readout-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        position: static;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .question,
+      .range-row,
+      .bar-row,
+      .challenge-grid,
+      .sensitivity-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        width: min(100% - 20px, 1220px);
+        padding-top: 12px;
+      }
+
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .stage-panel,
+      .hero-copy,
+      .hero-card {
+        padding: 16px;
+      }
+    }
+
+    @media print {
+      body {
+        background: var(--cp-surface);
+      }
+
+      .no-print,
+      .tabs,
+      .hero,
+      .stage:not(#business),
+      #business .stage-head .actions {
+        display: none !important;
+      }
+
+      .app {
+        width: 100%;
+        padding: 0;
+      }
+
+      .stage {
+        display: block !important;
+      }
+
+      .stage-panel,
+      .card,
+      .case-section {
+        box-shadow: none;
+        border-color: var(--cp-border-strong);
+      }
+
+      h2 {
+        font-size: 24pt;
+      }
+
+      .one-pager {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero no-print">
+      <section class="hero-copy">
+        <p class="eyebrow">Business Case Bench</p>
+        <h1>Stress-test adoption before the AI business case hardens.</h1>
+        <p class="lede">Most AI cases do not fail on the technology. They fail because nobody tested whether people will use the thing enough, often enough, in the process where value is supposed to land.</p>
+      </section>
+      <aside class="hero-card">
+        <div>
+          <p class="label">Expected annual net benefit</p>
+          <div class="metric-large" id="heroNet">-</div>
+        </div>
+        <p class="risk-line" id="heroFragility">Your case is most fragile on adoption - how many people actually use it.</p>
+      </aside>
+    </header>
+
+    <nav class="tabs no-print" aria-label="Business case stages" role="tablist">
+      <button class="tab" id="tab-define" role="tab" aria-controls="define" aria-selected="true" data-tab="define"><span>01</span><span>Define</span></button>
+      <button class="tab" id="tab-readiness" role="tab" aria-controls="readiness" aria-selected="false" data-tab="readiness"><span>02</span><span>Assess readiness</span></button>
+      <button class="tab" id="tab-model" role="tab" aria-controls="model" aria-selected="false" data-tab="model"><span>03</span><span>Model value</span></button>
+      <button class="tab" id="tab-business" role="tab" aria-controls="business" aria-selected="false" data-tab="business"><span>04</span><span>Business case</span></button>
+    </nav>
+
+    <main>
+      <section class="stage stage-panel active" id="define" role="tabpanel" aria-labelledby="tab-define">
+        <div class="stage-head">
+          <div>
+            <p class="eyebrow">Define</p>
+            <h2>Put governance upstream of the spreadsheet.</h2>
+            <p>Classification belongs before the financial model because it changes feasibility, controls, approvals and time-to-value.</p>
+          </div>
+          <span class="pill">shared state writes first</span>
+        </div>
+        <div class="grid two">
+          <label class="field">Organisation<input data-state="define.organisation" value="Department of Public Services"></label>
+          <label class="field">Business owner<input data-state="define.owner" value="Director of Operations"></label>
+          <label class="field">Process<input data-state="define.process" value="Eligibility case triage"></label>
+          <label class="field">System holding the data<input data-state="define.system" value="Dynamics 365 case management"></label>
+          <label class="field">Baseline metric<input data-state="define.baseline" value="45,000 cases/year at 60 minutes per case"></label>
+          <label class="field">Target<input data-state="define.target" value="Reduce handling effort while preserving decision accountability"></label>
+          <label class="field">Problem<textarea data-state="define.problem">Case workers spend too much time assembling context before they can make or route a decision.</textarea></label>
+          <label class="field">EU AI Act classification
+            <select data-state="define.classification">
+              <option value="Minimal risk">Minimal risk</option>
+              <option value="Limited risk">Limited risk</option>
+              <option value="High-risk Annex III - eligibility decisions" selected>High-risk Annex III - eligibility decisions</option>
+              <option value="High-risk Annex III - law enforcement">High-risk Annex III - law enforcement</option>
+              <option value="High-risk Annex III - employment">High-risk Annex III - employment</option>
+              <option value="Prohibited">Prohibited</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="stage stage-panel" id="readiness" role="tabpanel" aria-labelledby="tab-readiness">
+        <div class="stage-head">
+          <div>
+            <p class="eyebrow">Assess readiness</p>
+            <h2>The weak dimension matters more than the average.</h2>
+            <p>Twenty prompts score five dimensions. Sponsorship and data are weighted highest, but the output is the weakest dimension because that is what breaks adoption.</p>
+          </div>
+          <span class="pill">No / Partly / Mostly / Yes</span>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="question-list" id="questionList"></div>
+          </div>
+          <aside class="card">
+            <h3>Readiness by dimension</h3>
+            <p class="muted">Bars show the current score inside each dimension.</p>
+            <div class="bar-list" id="readinessBars" style="margin-top: 14px;"></div>
+            <div id="readinessCallout" style="margin-top: 16px;"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="stage stage-panel" id="model" role="tabpanel" aria-labelledby="tab-model">
+        <div class="stage-head">
+          <div>
+            <p class="eyebrow">Model the value</p>
+            <h2>Ranges expose the assumption that can break the case.</h2>
+            <p>Expected values drive the base case. The pessimistic and optimistic values create the payback window and the sensitivity ranking.</p>
+          </div>
+          <span class="pill">engine uses shared state</span>
+        </div>
+        <div class="model-layout">
+          <div class="grid">
+            <div class="card grid two">
+              <label class="field">Cases per year<input type="number" min="0" step="100" data-state="model.volume" value="45000"></label>
+              <label class="field">Minutes per case<input type="number" min="0" step="1" data-state="model.minutes" value="60"></label>
+              <label class="field">Loaded hourly cost (€)<input type="number" min="0" step="1" data-state="model.hourlyCost" value="46"></label>
+              <label class="field">Ramp months<input type="number" min="1" max="36" step="1" data-state="model.rampMonths" value="6"></label>
+              <label class="field">Annual licence and run cost (€)<input type="number" min="0" step="1000" data-state="model.licenceCost" value="55000"></label>
+              <label class="field">One-off implementation (€)<input type="number" min="0" step="1000" data-state="model.implementationCost" value="90000"></label>
+            </div>
+
+            <div class="card grid">
+              <h3>Range inputs</h3>
+              <div class="range-row">
+                <span class="label">Time saved per case %</span>
+                <label class="field">Pessimistic<input type="number" min="0" max="100" step="1" data-state="model.timeSaved.pessimistic" value="25"></label>
+                <label class="field">Expected<input type="number" min="0" max="100" step="1" data-state="model.timeSaved.expected" value="35"></label>
+                <label class="field">Optimistic<input type="number" min="0" max="100" step="1" data-state="model.timeSaved.optimistic" value="50"></label>
+              </div>
+              <div class="range-row">
+                <span class="label">Adoption %</span>
+                <label class="field">Pessimistic<input type="number" min="0" max="100" step="1" data-state="model.adoption.pessimistic" value="45"></label>
+                <label class="field">Expected<input type="number" min="0" max="100" step="1" data-state="model.adoption.expected" value="60"></label>
+                <label class="field">Optimistic<input type="number" min="0" max="100" step="1" data-state="model.adoption.optimistic" value="85"></label>
+              </div>
+            </div>
+
+            <div class="card grid three">
+              <div class="field">
+                <label for="recapture">Productivity recapture %</label>
+                <input id="recapture" type="number" min="0" max="100" step="1" data-state="model.recapture" value="50">
+              </div>
+              <div class="field">
+                <label for="riskAdj">Risk adjustment %</label>
+                <input id="riskAdj" type="number" min="0" max="100" step="1" data-state="model.riskAdjustment" value="20">
+              </div>
+              <div class="field">
+                <label for="discountRate">Discount rate %</label>
+                <input id="discountRate" type="number" min="0" max="100" step="1" data-state="model.discountRate" value="10">
+              </div>
+            </div>
+
+            <details>
+              <summary>Assumptions layer: defaults and replacement evidence</summary>
+              <div class="details-body">
+                <div class="assumption-grid" id="assumptionList"></div>
+              </div>
+            </details>
+          </div>
+
+          <aside class="readout" aria-live="polite">
+            <div>
+              <p class="data-label">Expected case</p>
+              <h3>Net benefit and payback window</h3>
+            </div>
+            <div class="readout-grid">
+              <div class="readout-tile">
+                <p class="data-label">Annual net</p>
+                <div class="readout-number" id="annualNet">-</div>
+              </div>
+              <div class="readout-tile">
+                <p class="data-label">Payback</p>
+                <div class="readout-number" id="paybackMonths">-</div>
+              </div>
+              <div class="readout-tile">
+                <p class="data-label">Three-year NPV</p>
+                <div class="readout-number" id="npv">-</div>
+              </div>
+            </div>
+            <div class="payback">
+              <div class="axis"><span>0</span><span>12</span><span>24</span><span>36 months</span></div>
+              <div class="payback-track" aria-label="Payback window from optimistic to pessimistic cases">
+                <div class="payback-band" id="paybackBand"></div>
+                <div class="payback-marker" id="paybackMarker" title="Expected payback"></div>
+              </div>
+              <p class="mini" id="paybackText">-</p>
+            </div>
+            <div>
+              <p class="data-label">Sensitivity ranking</p>
+              <div class="sensitivity-list" id="sensitivityList" style="margin-top: 10px;"></div>
+              <p class="fragile-text" id="fragileText" style="margin-top: 12px;">-</p>
+            </div>
+            <div class="challenge-grid">
+              <div class="challenge-card">
+                <p class="data-label">Adoption break-test</p>
+                <strong id="breakEvenAdoption">-</strong>
+                <p class="mini" id="adoptionCushion">-</p>
+              </div>
+              <div class="challenge-card">
+                <p class="data-label">Decision gate</p>
+                <strong id="decisionGate">-</strong>
+                <p class="mini" id="decisionGateReason">-</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="stage stage-panel" id="business" role="tabpanel" aria-labelledby="tab-business">
+        <div class="stage-head">
+          <div>
+            <p class="eyebrow">Business case</p>
+            <h2>One-page case, with the break-point named.</h2>
+            <p>The export carries the definition, readiness gaps, model outputs, fragile assumption and assumptions layer into a concise Markdown case.</p>
+          </div>
+          <div class="actions no-print">
+            <button class="button" id="copyMarkdown">Copy as Markdown</button>
+            <button class="button secondary" id="printPdf">Print to PDF</button>
+          </div>
+        </div>
+        <p class="markdown-status no-print" id="markdownStatus" aria-live="polite"></p>
+        <article class="one-pager" id="onePager"></article>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const readinessConfig = [
+      {
+        id: "data",
+        name: "Data",
+        weight: 1.35,
+        questions: [
+          "The source data exists in a system of record.",
+          "The baseline metric can be measured without manual reconstruction.",
+          "Data quality issues are known and bounded.",
+          "The data owner can approve access and retention."
+        ]
+      },
+      {
+        id: "governance",
+        name: "Governance",
+        weight: 1.1,
+        questions: [
+          "The decision rights between user and AI are explicit.",
+          "Risk, privacy and security review routes are understood.",
+          "Audit evidence can be produced if challenged.",
+          "The EU AI Act classification has an accountable owner."
+        ]
+      },
+      {
+        id: "skills",
+        name: "Skills",
+        weight: 0.9,
+        questions: [
+          "Users understand where AI output may be wrong.",
+          "Managers know how to coach adoption and exception handling.",
+          "The team has access to role-specific enablement.",
+          "Support paths exist for failed outputs or process confusion."
+        ]
+      },
+      {
+        id: "process",
+        name: "Process",
+        weight: 1,
+        questions: [
+          "The target process is stable enough to improve.",
+          "The AI step fits naturally into the user's flow of work.",
+          "Exceptions and handoffs are documented.",
+          "Success can be observed in process metrics, not just anecdotes."
+        ]
+      },
+      {
+        id: "sponsorship",
+        name: "Sponsorship",
+        weight: 1.35,
+        questions: [
+          "The business owner will change operating routines, not just fund tooling.",
+          "Supervisors have time to reinforce the new behaviour.",
+          "There is a named adoption target and review cadence.",
+          "Leaders will remove blockers when usage stalls."
+        ]
+      }
+    ];
+
+    const scoreScale = [
+      { label: "No", value: 0 },
+      { label: "Partly", value: 33 },
+      { label: "Mostly", value: 67 },
+      { label: "Yes", value: 100 }
+    ];
+
+    const assumptionsConfig = [
+      {
+        key: "volume",
+        label: "Cases per year",
+        defaultValue: "45,000",
+        note: "Illustrative operating volume for a high-throughput public-sector case process.",
+        replaceWith: "Actual annual completed cases from the system of record."
+      },
+      {
+        key: "minutes",
+        label: "Minutes per case",
+        defaultValue: "60",
+        note: "A round-number baseline that represents one hour of loaded staff effort.",
+        replaceWith: "Time-and-motion sample, queue analytics or activity logs."
+      },
+      {
+        key: "hourlyCost",
+        label: "Loaded hourly cost",
+        defaultValue: "EUR 46",
+        note: "Blended salary, on-cost and overhead proxy for knowledge work.",
+        replaceWith: "Finance-approved loaded rate for the role mix doing the work."
+      },
+      {
+        key: "timeSaved",
+        label: "Time saved per case",
+        defaultValue: "25% / 35% / 50%",
+        note: "Range estimate for effort removed from search, drafting and case assembly.",
+        replaceWith: "Pilot telemetry comparing assisted and unassisted cases."
+      },
+      {
+        key: "adoption",
+        label: "Adoption",
+        defaultValue: "45% / 60% / 85%",
+        note: "Adoption is deliberately ranged because it is usually the least-tested assumption.",
+        replaceWith: "Observed weekly active usage in the target user population."
+      },
+      {
+        key: "recapture",
+        label: "Productivity recapture",
+        defaultValue: "50%",
+        note: "Standard Forrester TEI practice commonly counts only a portion of time saved as monetisable benefit.",
+        replaceWith: "Finance-approved capacity recapture factor for the team."
+      },
+      {
+        key: "riskAdjustment",
+        label: "Risk adjustment",
+        defaultValue: "20%",
+        note: "Standard Forrester TEI practice applies risk adjustment to reflect uncertainty in realisation.",
+        replaceWith: "Risk factor agreed by the sponsor, finance and delivery owner."
+      },
+      {
+        key: "discountRate",
+        label: "Discount rate",
+        defaultValue: "10%",
+        note: "Conventional business-case discount rate used to compare future benefits in present-value terms.",
+        replaceWith: "Organisation-specific hurdle rate or Treasury guidance."
+      },
+      {
+        key: "licenceCost",
+        label: "Annual licence and run cost",
+        defaultValue: "EUR 55,000",
+        note: "Placeholder annual recurring cost for licences, hosting and support.",
+        replaceWith: "Supplier quote, internal chargeback and support run-rate."
+      },
+      {
+        key: "implementationCost",
+        label: "One-off implementation",
+        defaultValue: "EUR 90,000",
+        note: "Placeholder one-time build, change and control cost.",
+        replaceWith: "Delivery estimate including governance, integration, training and adoption."
+      }
+    ];
+
+    const sensitivityConfig = [
+      { id: "adoption", label: "Adoption", low: state => state.model.adoption.pessimistic, high: state => state.model.adoption.optimistic, apply: (state, value) => ({ adoption: { ...state.model.adoption, expected: value } }) },
+      { id: "timeSaved", label: "Time saved", low: state => state.model.timeSaved.pessimistic, high: state => state.model.timeSaved.optimistic, apply: (state, value) => ({ timeSaved: { ...state.model.timeSaved, expected: value } }) },
+      { id: "volume", label: "Volume", low: state => state.model.volume * 0.8, high: state => state.model.volume * 1.2, apply: (state, value) => ({ volume: value }) },
+      { id: "minutes", label: "Minutes per case", low: state => state.model.minutes * 0.8, high: state => state.model.minutes * 1.2, apply: (state, value) => ({ minutes: value }) },
+      { id: "hourlyCost", label: "Hourly cost", low: state => state.model.hourlyCost * 0.8, high: state => state.model.hourlyCost * 1.2, apply: (state, value) => ({ hourlyCost: value }) },
+      { id: "licenceCost", label: "Licence cost", low: state => state.model.licenceCost * 0.8, high: state => state.model.licenceCost * 1.2, apply: (state, value) => ({ licenceCost: value }) }
+    ];
+
+    const state = {
+      activeTab: "define",
+      define: {
+        organisation: "Department of Public Services",
+        owner: "Director of Operations",
+        process: "Eligibility case triage",
+        system: "Dynamics 365 case management",
+        baseline: "45,000 cases/year at 60 minutes per case",
+        target: "Reduce handling effort while preserving decision accountability",
+        problem: "Case workers spend too much time assembling context before they can make or route a decision.",
+        classification: "High-risk Annex III - eligibility decisions"
+      },
+      readiness: Object.fromEntries(readinessConfig.flatMap(dimension => dimension.questions.map((_, index) => [`${dimension.id}-${index}`, 67]))),
+      model: {
+        volume: 45000,
+        minutes: 60,
+        hourlyCost: 46,
+        rampMonths: 6,
+        licenceCost: 55000,
+        implementationCost: 90000,
+        timeSaved: { pessimistic: 25, expected: 35, optimistic: 50 },
+        adoption: { pessimistic: 45, expected: 60, optimistic: 85 },
+        recapture: 50,
+        riskAdjustment: 20,
+        discountRate: 10
+      },
+      outputs: {}
+    };
+
+    const money = value => new Intl.NumberFormat("en-IE", {
+      style: "currency",
+      currency: "EUR",
+      maximumFractionDigits: 0
+    }).format(Number.isFinite(value) ? value : 0);
+
+    const number = value => new Intl.NumberFormat("en-IE", {
+      maximumFractionDigits: 0
+    }).format(Number.isFinite(value) ? value : 0);
+
+    const percent = value => `${Math.round(value)}%`;
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+    const toRatio = value => clamp(Number(value) || 0, 0, 100) / 100;
+
+    function setByPath(target, path, value) {
+      const keys = path.split(".");
+      let cursor = target;
+      keys.slice(0, -1).forEach(key => {
+        cursor = cursor[key];
+      });
+      cursor[keys.at(-1)] = value;
+    }
+
+    function getByPath(target, path) {
+      return path.split(".").reduce((cursor, key) => cursor?.[key], target);
+    }
+
+    function scenarioModel(overrides = {}) {
+      return {
+        ...state.model,
+        ...overrides,
+        timeSaved: { ...state.model.timeSaved, ...(overrides.timeSaved || {}) },
+        adoption: { ...state.model.adoption, ...(overrides.adoption || {}) }
+      };
+    }
+
+    function calculate(model, scenario = "expected") {
+      const save = toRatio(model.timeSaved[scenario]);
+      const adopt = toRatio(model.adoption[scenario]);
+      const recapture = toRatio(model.recapture);
+      const riskAdj = toRatio(model.riskAdjustment);
+      const raw = model.volume * (model.minutes / 60) * model.hourlyCost * save * adopt;
+      const gross = raw * recapture * (1 - riskAdj);
+      const net = gross - model.licenceCost;
+      const payback = simulatePayback(model, gross);
+      const npv = calculateNpv(model, gross);
+      return { raw, gross, net, payback, npv };
+    }
+
+    function simulatePayback(model, steadyGross) {
+      const steadyNet = steadyGross - model.licenceCost;
+      if (steadyNet <= 0) return null;
+      let cumulative = -model.implementationCost;
+      const monthlyNet = steadyNet / 12;
+      for (let month = 1; month <= 36; month += 1) {
+        const rampFactor = clamp(month / Math.max(model.rampMonths, 1), 0, 1);
+        cumulative += monthlyNet * rampFactor;
+        if (cumulative >= 0) return month;
+      }
+      return null;
+    }
+
+    function calculateNpv(model, steadyGross) {
+      const discount = toRatio(model.discountRate);
+      const yearOneScale = (model.rampMonths + 1) / 24 + Math.max(12 - model.rampMonths, 0) / 12;
+      const annualNet = steadyGross - model.licenceCost;
+      const cashflows = [
+        -model.implementationCost + (annualNet * yearOneScale),
+        annualNet,
+        annualNet
+      ];
+      return cashflows.reduce((total, cashflow, index) => total + cashflow / Math.pow(1 + discount, index + 1), 0);
+    }
+
+    function readinessScores() {
+      const dimensions = readinessConfig.map(dimension => {
+        const values = dimension.questions.map((_, index) => state.readiness[`${dimension.id}-${index}`]);
+        const score = values.reduce((sum, value) => sum + value, 0) / values.length;
+        return { ...dimension, score, weightedScore: score * dimension.weight };
+      });
+      const weakest = [...dimensions].sort((a, b) => a.score - b.score)[0];
+      const gaps = dimensions.filter(dimension => dimension.score < 50);
+      return { dimensions, weakest, gaps };
+    }
+
+    function sensitivity() {
+      const rows = sensitivityConfig.map(item => {
+        const lowModel = scenarioModel(item.apply(state, item.low(state)));
+        const highModel = scenarioModel(item.apply(state, item.high(state)));
+        const low = calculate(lowModel, "expected").net;
+        const high = calculate(highModel, "expected").net;
+        return { ...item, swing: Math.abs(high - low), low, high };
+      }).sort((a, b) => b.swing - a.swing);
+      return rows;
+    }
+
+    function fragilityCopy(item) {
+      const endings = {
+        adoption: "how many people actually use it",
+        timeSaved: "how much effort it really removes per case",
+        volume: "how many cases pass through the process",
+        minutes: "how long the work really takes today",
+        hourlyCost: "the loaded cost of the people doing the work",
+        licenceCost: "the recurring cost of keeping it live"
+      };
+      return `Your case is most fragile on ${item.label.toLowerCase()} - ${endings[item.id]}.`;
+    }
+
+    function assumptionByKey(key) {
+      return assumptionsConfig.find(item => item.key === key);
+    }
+
+    function adoptionNeededForPayback(targetMonths = 18) {
+      const testModel = adoption => scenarioModel({ adoption: { ...state.model.adoption, expected: adoption } });
+      if ((calculate(testModel(100), "expected").payback ?? Infinity) > targetMonths) return null;
+      let low = 0;
+      let high = 100;
+      for (let index = 0; index < 24; index += 1) {
+        const midpoint = (low + high) / 2;
+        const payback = calculate(testModel(midpoint), "expected").payback ?? Infinity;
+        if (payback <= targetMonths) high = midpoint;
+        else low = midpoint;
+      }
+      return Math.ceil(high);
+    }
+
+    function decisionGate(readiness, expected) {
+      if (state.define.classification === "Prohibited") {
+        return {
+          label: "Stop",
+          reason: "The selected EU AI Act classification is prohibited; redesign the use case before modelling value."
+        };
+      }
+      if (readiness.gaps.length) {
+        return {
+          label: "Fix readiness first",
+          reason: `${readiness.gaps.map(gap => gap.name).join(", ")} under 50%; the business case should not scale until this is addressed.`
+        };
+      }
+      if (expected.payback === null || expected.payback > 24) {
+        return {
+          label: "Pilot only",
+          reason: "Expected payback is outside a strong approval window; collect evidence before committing full spend."
+        };
+      }
+      if (state.define.classification.startsWith("High-risk")) {
+        return {
+          label: "Proceed with controls",
+          reason: "Value is plausible, but the high-risk classification needs documented oversight, logging and accountable human review."
+        };
+      }
+      return {
+        label: "Proceed to measured pilot",
+        reason: "The case is positive; use the pilot to prove the fragile assumption before scaling."
+      };
+    }
+
+    function evidenceAsk(fragile, readiness) {
+      const assumption = assumptionByKey(fragile.id);
+      const asks = [`Prove ${fragile.label.toLowerCase()} with ${assumption ? assumption.replaceWith.toLowerCase() : "observed pilot evidence"}.`];
+      asks.push(`Improve ${readiness.weakest.name} readiness before treating the expected case as bankable.`);
+      if (state.define.classification.startsWith("High-risk")) asks.push("Confirm human oversight, audit evidence and governance ownership before approval.");
+      if (state.define.classification === "Prohibited") asks.push("Redesign or abandon the use case before any financial approval.");
+      return asks;
+    }
+
+    function renderQuestions() {
+      const html = readinessConfig.map(dimension => `
+        <section class="card" aria-labelledby="${dimension.id}-title">
+          <h3 id="${dimension.id}-title">${dimension.name}</h3>
+          <p class="mini">Weight ${dimension.weight.toFixed(2)}</p>
+          <div class="question-list" style="margin-top: 10px;">
+            ${dimension.questions.map((question, index) => {
+              const id = `${dimension.id}-${index}`;
+              return `
+                <div class="question">
+                  <div>
+                    <strong>${question}</strong>
+                    <small>${dimension.name} readiness prompt ${index + 1} of 4</small>
+                  </div>
+                  <div class="radio-scale" role="radiogroup" aria-label="${question}">
+                    ${scoreScale.map(option => `
+                      <span>
+                        <input id="${id}-${option.value}" type="radio" name="${id}" value="${option.value}" data-readiness="${id}" ${state.readiness[id] === option.value ? "checked" : ""}>
+                        <label for="${id}-${option.value}">${option.label}</label>
+                      </span>
+                    `).join("")}
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </section>
+      `).join("");
+      document.querySelector("#questionList").innerHTML = html;
+    }
+
+    function renderAssumptions() {
+      document.querySelector("#assumptionList").innerHTML = assumptionsConfig.map(item => `
+        <div class="assumption">
+          <strong>${item.label}: ${item.defaultValue}</strong>
+          <p>${item.note}</p>
+          <p><span class="mini">Replace with</span> ${item.replaceWith}</p>
+        </div>
+      `).join("");
+    }
+
+    function renderReadiness() {
+      const { dimensions, weakest, gaps } = readinessScores();
+      document.querySelector("#readinessBars").innerHTML = dimensions.map(dimension => `
+        <div class="bar-row">
+          <strong>${dimension.name}</strong>
+          <div class="bar-track" aria-label="${dimension.name} ${percent(dimension.score)}">
+            <div class="bar-fill" style="--w:${clamp(dimension.score, 0, 100)}%; --bar-color:${dimension.score < 50 ? "var(--cp-danger)" : "var(--cp-link)"}"></div>
+          </div>
+          <span class="mono">${percent(dimension.score)}</span>
+        </div>
+      `).join("");
+
+      const callout = gaps.length
+        ? `<div class="callout"><strong>Adoption risk: ${gaps.map(gap => gap.name).join(", ")} under 50%.</strong><p>The weakest dimension is ${weakest.name}. Treat this as the first business-case break test.</p></div>`
+        : `<div class="callout good"><strong>No dimension is under 50%.</strong><p>The weakest dimension is still ${weakest.name}; improve that before debating the total score.</p></div>`;
+      document.querySelector("#readinessCallout").innerHTML = callout;
+    }
+
+    function renderModel() {
+      const expected = calculate(state.model, "expected");
+      const pessimistic = calculate(state.model, "pessimistic");
+      const optimistic = calculate(state.model, "optimistic");
+      const rows = sensitivity();
+      const fragile = rows[0];
+      const readiness = readinessScores();
+      const gate = decisionGate(readiness, expected);
+      const adoptionThreshold = adoptionNeededForPayback(18);
+      const adoptionMargin = adoptionThreshold === null ? null : state.model.adoption.expected - adoptionThreshold;
+      const maxSwing = fragile?.swing || 1;
+      const paybacks = [optimistic.payback, expected.payback, pessimistic.payback].map(value => value ?? 36);
+      const bandStart = clamp(Math.min(paybacks[0], paybacks[2]) / 36 * 100, 0, 100);
+      const bandEnd = clamp(Math.max(paybacks[0], paybacks[2]) / 36 * 100, 0, 100);
+
+      state.outputs = {
+        expected,
+        pessimistic,
+        optimistic,
+        sensitivityRows: rows,
+        fragile,
+        fragileText: fragilityCopy(fragile),
+        readiness,
+        decisionGate: gate,
+        adoptionThreshold,
+        adoptionMargin,
+        evidenceAsks: evidenceAsk(fragile, readiness)
+      };
+
+      document.querySelector("#heroNet").textContent = money(expected.net);
+      document.querySelector("#heroFragility").textContent = state.outputs.fragileText;
+      document.querySelector("#annualNet").textContent = money(expected.net);
+      document.querySelector("#paybackMonths").textContent = expected.payback ? `${expected.payback} mo` : ">36 mo";
+      document.querySelector("#npv").textContent = money(expected.npv);
+      document.querySelector("#paybackBand").style.setProperty("--start", `${bandStart}%`);
+      document.querySelector("#paybackBand").style.setProperty("--width", `${Math.max(bandEnd - bandStart, 1)}%`);
+      document.querySelector("#paybackMarker").style.setProperty("--left", `${clamp((expected.payback ?? 36) / 36 * 100, 0, 100)}%`);
+      document.querySelector("#paybackText").textContent = `Window: optimistic ${optimistic.payback ?? ">36"} months, expected ${expected.payback ?? ">36"} months, pessimistic ${pessimistic.payback ?? ">36"} months.`;
+      document.querySelector("#fragileText").textContent = state.outputs.fragileText;
+      document.querySelector("#breakEvenAdoption").textContent = adoptionThreshold === null ? "Not reachable" : `${adoptionThreshold}% for 18 mo`;
+      document.querySelector("#adoptionCushion").textContent = adoptionThreshold === null
+        ? "Even full adoption does not hit the target payback window."
+        : `Expected adoption is ${Math.abs(adoptionMargin)} points ${adoptionMargin >= 0 ? "above" : "below"} that threshold.`;
+      document.querySelector("#decisionGate").textContent = gate.label;
+      document.querySelector("#decisionGateReason").textContent = gate.reason;
+      document.querySelector("#sensitivityList").innerHTML = rows.map(row => `
+        <div class="sensitivity-row ${row.id === fragile.id ? "fragile" : ""}">
+          <strong>${row.label}</strong>
+          <div class="bar-track" aria-label="${row.label} swing ${money(row.swing)}">
+            <div class="bar-fill" style="--w:${clamp(row.swing / maxSwing * 100, 2, 100)}%"></div>
+          </div>
+          <span class="mono">${money(row.swing)}</span>
+        </div>
+      `).join("");
+    }
+
+    function markdownCase() {
+      const readiness = state.outputs.readiness || readinessScores();
+      const expected = state.outputs.expected || calculate(state.model, "expected");
+      const pessimistic = state.outputs.pessimistic || calculate(state.model, "pessimistic");
+      const optimistic = state.outputs.optimistic || calculate(state.model, "optimistic");
+      const fragileText = state.outputs.fragileText || fragilityCopy(sensitivity()[0]);
+      const gate = state.outputs.decisionGate || decisionGate(readiness, expected);
+      const evidenceAsks = state.outputs.evidenceAsks || evidenceAsk(sensitivity()[0], readiness);
+      const adoptionThreshold = state.outputs.adoptionThreshold ?? adoptionNeededForPayback(18);
+      const gaps = readiness.gaps.length ? readiness.gaps.map(gap => `${gap.name} (${percent(gap.score)})`).join(", ") : "No dimension under 50%; weakest dimension is still " + readiness.weakest.name + ".";
+      const assumptions = assumptionsConfig.map(item => `- ${item.label}: default ${item.defaultValue}. ${item.note} Replace with: ${item.replaceWith}`).join("\n");
+
+      return `# Business Case Bench: ${state.define.process}
+
+## Thesis
+Most AI business cases do not fail on the technology. They fail because nobody stress-tested the adoption assumption.
+
+## Definition
+- Organisation: ${state.define.organisation}
+- Business owner: ${state.define.owner}
+- Process: ${state.define.process}
+- Problem: ${state.define.problem}
+- Baseline metric: ${state.define.baseline}
+- Target: ${state.define.target}
+- System holding the data: ${state.define.system}
+- EU AI Act classification: ${state.define.classification}
+
+## Readiness
+- Weakest dimension: ${readiness.weakest.name} at ${percent(readiness.weakest.score)}
+- Gaps under 50%: ${gaps}
+
+## Value model
+- Cases per year: ${number(state.model.volume)}
+- Minutes per case: ${number(state.model.minutes)}
+- Loaded hourly cost: ${money(state.model.hourlyCost)}
+- Time saved per case: ${state.model.timeSaved.pessimistic}% / ${state.model.timeSaved.expected}% / ${state.model.timeSaved.optimistic}%
+- Adoption: ${state.model.adoption.pessimistic}% / ${state.model.adoption.expected}% / ${state.model.adoption.optimistic}%
+- Productivity recapture: ${state.model.recapture}%
+- Risk adjustment: ${state.model.riskAdjustment}%
+- Discount rate: ${state.model.discountRate}%
+- Annual licence and run cost: ${money(state.model.licenceCost)}
+- One-off implementation: ${money(state.model.implementationCost)}
+- Ramp: ${state.model.rampMonths} months
+
+## Outputs
+- Expected annual net benefit: ${money(expected.net)}
+- Expected payback: ${expected.payback ? `${expected.payback} months` : "More than 36 months"}
+- Payback window: optimistic ${optimistic.payback ?? "more than 36"} months to pessimistic ${pessimistic.payback ?? "more than 36"} months
+- Three-year NPV: ${money(expected.npv)}
+- Fragile assumption: ${fragileText}
+- Adoption break-test: ${adoptionThreshold === null ? "Not reachable within 18 months even at full adoption" : `${adoptionThreshold}% adoption required for 18-month payback`}
+- Decision gate: ${gate.label} - ${gate.reason}
+
+## Evidence ask
+${evidenceAsks.map(ask => `- ${ask}`).join("\n")}
+
+## Assumptions layer
+${assumptions}
+`;
+    }
+
+    function renderBusinessCase() {
+      const readiness = state.outputs.readiness || readinessScores();
+      const expected = state.outputs.expected || calculate(state.model, "expected");
+      const pessimistic = state.outputs.pessimistic || calculate(state.model, "pessimistic");
+      const optimistic = state.outputs.optimistic || calculate(state.model, "optimistic");
+      const fragileText = state.outputs.fragileText || fragilityCopy(sensitivity()[0]);
+      const gate = state.outputs.decisionGate || decisionGate(readiness, expected);
+      const evidenceAsks = state.outputs.evidenceAsks || evidenceAsk(sensitivity()[0], readiness);
+      const adoptionThreshold = state.outputs.adoptionThreshold ?? adoptionNeededForPayback(18);
+      const gaps = readiness.gaps.length ? readiness.gaps.map(gap => `${gap.name} (${percent(gap.score)})`).join(", ") : "No dimension under 50%.";
+
+      document.querySelector("#onePager").innerHTML = `
+        <section class="case-section">
+          <h3>Thesis</h3>
+          <p>Most AI business cases do not fail on the technology. They fail because nobody stress-tested the adoption assumption.</p>
+        </section>
+        <section class="case-section">
+          <h3>Definition</h3>
+          <div class="summary-grid">
+            <p><span class="mini">Organisation</span><br>${state.define.organisation}</p>
+            <p><span class="mini">Owner</span><br>${state.define.owner}</p>
+            <p><span class="mini">Process</span><br>${state.define.process}</p>
+            <p><span class="mini">Classification</span><br>${state.define.classification}</p>
+          </div>
+          <p style="margin-top: 10px;"><span class="mini">Problem</span><br>${state.define.problem}</p>
+          <p style="margin-top: 10px;"><span class="mini">Baseline to target</span><br>${state.define.baseline} -> ${state.define.target}</p>
+          <p style="margin-top: 10px;"><span class="mini">System holding the data</span><br>${state.define.system}</p>
+        </section>
+        <section class="case-section">
+          <h3>Readiness</h3>
+          <p>Weakest dimension: <strong>${readiness.weakest.name}</strong> at <strong>${percent(readiness.weakest.score)}</strong>.</p>
+          <p>Gaps under 50%: ${gaps}</p>
+        </section>
+        <section class="case-section">
+          <h3>Financial case</h3>
+          <div class="summary-grid">
+            <p><span class="mini">Expected annual net</span><br><strong>${money(expected.net)}</strong></p>
+            <p><span class="mini">Expected payback</span><br><strong>${expected.payback ? `${expected.payback} months` : "More than 36 months"}</strong></p>
+            <p><span class="mini">Payback window</span><br><strong>${optimistic.payback ?? ">36"}-${pessimistic.payback ?? ">36"} months</strong></p>
+            <p><span class="mini">Three-year NPV</span><br><strong>${money(expected.npv)}</strong></p>
+          </div>
+          <p style="margin-top: 10px;" class="fragile-text">${fragileText}</p>
+          <p style="margin-top: 10px;">Adoption break-test: <strong>${adoptionThreshold === null ? "not reachable within 18 months" : `${adoptionThreshold}% adoption required for 18-month payback`}</strong>.</p>
+        </section>
+        <section class="case-section">
+          <h3>Decision gate and evidence ask</h3>
+          <p><strong>${gate.label}.</strong> ${gate.reason}</p>
+          ${evidenceAsks.map(ask => `<p>${ask}</p>`).join("")}
+        </section>
+        <section class="case-section">
+          <h3>Assumptions to replace before approval</h3>
+          ${assumptionsConfig.map(item => `<p><strong>${item.label}:</strong> ${item.note} <span class="muted">Replace with ${item.replaceWith}</span></p>`).join("")}
+        </section>
+      `;
+    }
+
+    function renderAll() {
+      renderReadiness();
+      renderModel();
+      renderBusinessCase();
+    }
+
+    function activateTab(tabName) {
+      state.activeTab = tabName;
+      document.querySelectorAll(".tab").forEach(tab => {
+        const selected = tab.dataset.tab === tabName;
+        tab.setAttribute("aria-selected", String(selected));
+      });
+      document.querySelectorAll(".stage").forEach(stage => {
+        stage.classList.toggle("active", stage.id === tabName);
+      });
+    }
+
+    document.addEventListener("input", event => {
+      const control = event.target;
+      if (control.matches("[data-state]")) {
+        const current = getByPath(state, control.dataset.state);
+        const value = typeof current === "number" ? Number(control.value) : control.value;
+        setByPath(state, control.dataset.state, value);
+        renderAll();
+      }
+    });
+
+    document.addEventListener("change", event => {
+      const control = event.target;
+      if (control.matches("[data-readiness]")) {
+        state.readiness[control.dataset.readiness] = Number(control.value);
+        renderAll();
+      }
+      if (control.matches("[data-state]")) {
+        const current = getByPath(state, control.dataset.state);
+        const value = typeof current === "number" ? Number(control.value) : control.value;
+        setByPath(state, control.dataset.state, value);
+        renderAll();
+      }
+    });
+
+    document.querySelector(".tabs").addEventListener("click", event => {
+      const tab = event.target.closest(".tab");
+      if (tab) activateTab(tab.dataset.tab);
+    });
+
+    document.querySelector(".tabs").addEventListener("keydown", event => {
+      const tabs = [...document.querySelectorAll(".tab")];
+      const index = tabs.findIndex(tab => tab.getAttribute("aria-selected") === "true");
+      const nextIndex = event.key === "ArrowRight" ? index + 1 : event.key === "ArrowLeft" ? index - 1 : null;
+      if (nextIndex !== null) {
+        event.preventDefault();
+        const next = tabs[(nextIndex + tabs.length) % tabs.length];
+        next.focus();
+        activateTab(next.dataset.tab);
+      }
+    });
+
+    document.querySelector("#copyMarkdown").addEventListener("click", async () => {
+      const status = document.querySelector("#markdownStatus");
+      const markdown = markdownCase();
+      try {
+        await navigator.clipboard.writeText(markdown);
+        status.textContent = "Markdown copied.";
+      } catch (error) {
+        const textarea = document.createElement("textarea");
+        textarea.value = markdown;
+        document.body.append(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        status.textContent = "Markdown copied using fallback.";
+      }
+    });
+
+    document.querySelector("#printPdf").addEventListener("click", () => window.print());
+
+    renderQuestions();
+    renderAssumptions();
+    renderAll();
+  </script>
+</body>
+</html>
